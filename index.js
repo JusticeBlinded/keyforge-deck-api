@@ -1,4 +1,4 @@
-const createDeck = require('../keyforge-deck-generator');
+const createDeck = require('./keyforge-deck-generator');
 const express = require('express');
 const app = express();
 const port = 3000;
