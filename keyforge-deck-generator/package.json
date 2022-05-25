@@ -1,0 +1,16 @@
+{
+  "name": "keyforge-deck-generator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.1",
+    "jest": "^28.1.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "description": "``` yarn install ```",
+  "devDependencies": {},
+  "author": ""
+}
