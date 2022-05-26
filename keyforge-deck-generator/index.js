@@ -1,4 +1,4 @@
-const cardList = require('./sets-truncated/cota-truncated.json');
+const cardList = require('./sets/cota.json');
 const tempCardArray = cardList.cards;
 let deck = [];
 
