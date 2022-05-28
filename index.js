@@ -13,15 +13,56 @@ const pool = new Pool({
 
 app.get('/api/generate-deck', (req, res) => {
     const requestedDeck = createDeck();
+
+    try {
+        const insertDeckInfo = `
+            INSERT INTO
+                decks (id, name, set, house1, house2, house3)
+            VALUES
+                (DEFAULT, $1, $2, $3, $4, $5
+            ON CONFLICT (name)
+            DO NOTHING
+            RETURNING id
+        `;
+        const deckInsertResponse = await pool.query(insertDeckInfo, [requestedDeck.name, requestedDeck.code, requestedDeck.houses[0], requestedDeck.houses[1], requestedDeck.houses[2]]);
+
+        let deckID;
+
+        if (deckInsertResponse.rows.length) {
+            deckID = deckInsertResponse.rows[0].id;
+        } else {
+            continue;
+        }
+
+        const cards = requestedDeck.cards;
+
+        for (let i = 0; i < cards.length; i++) {
+            const card = cards[i];
+
+            const cardQuery = `
+                INSERT INTO
+                    cards (id, deck_id, name, house, card_text, image_link)
+                VALUES
+                    (DEFAULT, $1, $2, $3, $4, $5)
+            `;
+
+            await pool.query(cardQuery, [deckID, cards[i].name, cards[i].house, cards[i].text, cards[i].image]);
+
+        }
+        
+    } catch (err) {
+        console.error(err);
+        res.send('Error ' + err);
+        return;
+    }
+
     res.json(requestedDeck);
 })
 
 app.get('/api/db', async (req, res) => {
     try {
-      const client = await pool.connect();
-      const result = await client.query('SELECT * FROM test_table');
-      client.release();
-
+      const result = await pool.query('SELECT * FROM test_table');
+      
       const results = { 'results': (result) ? result.rows : null};
       res.json(results);
 
@@ -31,6 +72,31 @@ app.get('/api/db', async (req, res) => {
     }
 })
 
+app.get('/api/decks', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT * FROM decks');
+      
+      const results = { 'results': (result) ? result.rows : null};
+      res.json(results);
+
+    } catch (err) {
+      console.error(err);
+      res.send('Error ' + err);
+    }
+})
+
+app.get('/api/cards', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT * FROM cards');
+      
+      const results = { 'results': (result) ? result.rows : null};
+      res.json(results);
+
+    } catch (err) {
+      console.error(err);
+      res.send('Error ' + err);
+    }
+})
 
 app.listen(port, () => {
     console.log(`Waiting for decks to be requested on port ${port}`);
