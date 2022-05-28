@@ -1,3 +1,6 @@
+// load the .env file into process.env
+require('dotenv').config();
+
 const createDeck = require('./keyforge-deck-generator');
 const express = require('express');
 const app = express();
@@ -11,7 +14,7 @@ const pool = new Pool({
   }
 });
 
-app.get('/api/generate-deck', (req, res) => {
+app.get('/api/generate-deck', async (req, res) => {
     const requestedDeck = createDeck();
 
     try {
@@ -31,7 +34,8 @@ app.get('/api/generate-deck', (req, res) => {
         if (deckInsertResponse.rows.length) {
             deckID = deckInsertResponse.rows[0].id;
         } else {
-            continue;
+            res.send('Error ' + err);
+            return
         }
 
         const cards = requestedDeck.cards;
@@ -47,7 +51,6 @@ app.get('/api/generate-deck', (req, res) => {
             `;
 
             await pool.query(cardQuery, [deckID, cards[i].name, cards[i].house, cards[i].text, cards[i].image]);
-
         }
         
     } catch (err) {
