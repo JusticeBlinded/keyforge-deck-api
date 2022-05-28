@@ -72,6 +72,31 @@ app.get('/api/db', async (req, res) => {
     }
 })
 
+app.get('/api/decks', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT * FROM decks');
+      
+      const results = { 'results': (result) ? result.rows : null};
+      res.json(results);
+
+    } catch (err) {
+      console.error(err);
+      res.send('Error ' + err);
+    }
+})
+
+app.get('/api/cards', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT * FROM cards');
+      
+      const results = { 'results': (result) ? result.rows : null};
+      res.json(results);
+
+    } catch (err) {
+      console.error(err);
+      res.send('Error ' + err);
+    }
+})
 
 app.listen(port, () => {
     console.log(`Waiting for decks to be requested on port ${port}`);
