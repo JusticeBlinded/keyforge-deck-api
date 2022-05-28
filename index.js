@@ -24,7 +24,7 @@ app.get('/api/generate-deck', (req, res) => {
             DO NOTHING
             RETURNING id
         `;
-        const deckInsertResponse = await pool.query(insertDeckInfo, [requestedDeck.name, requestedDeck.expansion, requestedDeck.houses[0], requestedDeck.houses[1], requestedDeck.houses[2]]);
+        const deckInsertResponse = await pool.query(insertDeckInfo, [requestedDeck.name, requestedDeck.code, requestedDeck.houses[0], requestedDeck.houses[1], requestedDeck.houses[2]]);
 
         let deckID;
 
@@ -53,6 +53,7 @@ app.get('/api/generate-deck', (req, res) => {
     } catch (err) {
         console.error(err);
         res.send('Error ' + err);
+        return;
     }
 
     res.json(requestedDeck);
