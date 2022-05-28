@@ -22,9 +22,7 @@ app.get('/api/generate-deck', async (req, res) => {
             INSERT INTO
                 decks (id, name, set, house1, house2, house3)
             VALUES
-                (DEFAULT, $1, $2, $3, $4, $5
-            ON CONFLICT (name)
-            DO NOTHING
+                (DEFAULT, $1, $2, $3, $4, $5)
             RETURNING id
         `;
         const deckInsertResponse = await pool.query(insertDeckInfo, [requestedDeck.name, requestedDeck.code, requestedDeck.houses[0], requestedDeck.houses[1], requestedDeck.houses[2]]);
