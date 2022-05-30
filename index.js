@@ -89,7 +89,6 @@ app.get('/api/decks', async (req, res) => {
 app.get('/api/cards', async (req, res) => {
     try {
       const result = await pool.query('SELECT * FROM cards');
-      
       const results = { 'results': (result) ? result.rows : null};
       res.json(results);
 
@@ -97,6 +96,22 @@ app.get('/api/cards', async (req, res) => {
       console.error(err);
       res.send('Error ' + err);
     }
+})
+
+app.get('/api/decks/:deckID', async (req, res) => {
+  const deckID = req.params.deckID;
+
+  try {
+    const deckResult = await pool.query('SELECT * FROM decks WHERE id = $1', [Number.parseInt(deckID)]);
+    const cardResult = await pool.query('SELECT * FROM cards WHERE deck_id = $1', [Number.parseInt(deckID)]);
+    res.json({
+      deck: deckResult.rows,
+      cards: cardResult.rows
+    });
+  } catch (err) {
+    console.error(err);
+    res.send('Error ' + err);
+  }
 })
 
 app.listen(port, () => {
